@@ -39,7 +39,7 @@ namespace Blog_App.Pages.Admin.Blogs
             };
 
             await blogPostRepository.AddAsync(blogPost);
-
+            TempData["MessageDescription"] = "New bolog post created!";
             return RedirectToPage("/Admin/Blogs/List");
         }
     }
