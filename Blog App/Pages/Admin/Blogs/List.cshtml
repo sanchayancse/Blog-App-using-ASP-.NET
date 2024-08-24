@@ -5,11 +5,18 @@
 <div class="bg-secondary bg-opacity-10 py-2 mb-5">
     <div class="container">
         <h1>Blogs</h1>
-
     </div>
-
 </div>
-
+@{
+    var messageDescription = (string)ViewData["MessageDescription"];
+}
+@if (!string.IsNullOrWhiteSpace(messageDescription))
+{
+    <div class="alert alert-success alert-dismissible fade show mb-5" role="alert">
+        @Html.Raw(messageDescription)
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 <div class="container">
     <table class="table">
         <thead>
@@ -19,19 +26,14 @@
                
             </tr>
         </thead>
-
         <tbody>
-            
             @foreach(var blogpost in Model.BlogPosts){
                 <tr>
                     <td>@blogpost.Id</td>
                     <td>@blogpost.Headig</td>
                     <td><a href="/Admin/Blogs/Edit/@blogpost.Id">View</a></td>
-
-
                 </tr>
             }
-
         </tbody>
     </table>
 </div>
