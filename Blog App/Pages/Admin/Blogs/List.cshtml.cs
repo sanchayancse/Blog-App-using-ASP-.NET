@@ -1,7 +1,9 @@
 using Blog_App.Data;
 using Blog_App.Models.Domain;
+using Blog_App.Models.ViewModels;
 using Blog_App.Repositories;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Text.Json;
 
 namespace Blog_App.Pages.Admin.Blogs
 {
@@ -17,9 +19,9 @@ namespace Blog_App.Pages.Admin.Blogs
         }
         public async Task OnGet()
         {
-            var messageDescription = (string)TempData["MessageDescription"];
-            if (!string.IsNullOrWhiteSpace(messageDescription)) { 
-                ViewData["MessageDescription"] = messageDescription;
+            var notificationJson = (string)TempData["Notification"];
+            if (notificationJson != null) {
+                ViewData["Notification"] = JsonSerializer.Deserialize<Notification>(notificationJson.ToString());
             }
             BlogPosts = (await blogPostRepository.GetAllAsync())?.ToList();
         }
