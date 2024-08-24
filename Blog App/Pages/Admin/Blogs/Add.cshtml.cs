@@ -4,6 +4,7 @@ using Blog_App.Models.ViewModels;
 using Blog_App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Text.Json;
 
 namespace Blog_App.Pages.Admin.Blogs
 {
@@ -39,7 +40,14 @@ namespace Blog_App.Pages.Admin.Blogs
             };
 
             await blogPostRepository.AddAsync(blogPost);
-            TempData["MessageDescription"] = "New bolog post created!";
+            var notification = new Notification
+            {
+                Type = Enums.NotifiationType.Succcess,
+                Message = "New blog post created!"
+            };
+
+            TempData["Notification"] = JsonSerializer.Serialize(notification);
+
             return RedirectToPage("/Admin/Blogs/List");
         }
     }
