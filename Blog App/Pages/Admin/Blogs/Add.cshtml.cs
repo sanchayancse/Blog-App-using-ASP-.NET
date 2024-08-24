@@ -1,6 +1,7 @@
 using Blog_App.Data;
 using Blog_App.Models.Domain;
 using Blog_App.Models.ViewModels;
+using Blog_App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -9,19 +10,21 @@ namespace Blog_App.Pages.Admin.Blogs
     public class AddModel : PageModel
     {
         private readonly BlogDbContext blogDbContext;
+        private readonly IBlogPostRepository blogPostRepository;
 
         [BindProperty]
         public AddBlogPost AddBlogPostRequest { get; set; }
 
-        public AddModel(BlogDbContext blogDbContext)
+        public AddModel(IBlogPostRepository blogPostRepository)
         {
-            this.blogDbContext = blogDbContext;
+            this.blogPostRepository = blogPostRepository;
         }
         public void OnGet()
         {
         }
 
-        public async Task<IActionResult> OnPost() {
+        public async Task<IActionResult> OnPost()
+        {
             var blogPost = new BlogPost()
             {
                 Headig = AddBlogPostRequest.Headig,
@@ -35,9 +38,9 @@ namespace Blog_App.Pages.Admin.Blogs
                 Visible = AddBlogPostRequest.Visible,
             };
 
-            await blogDbContext.BlogPosts.AddAsync(blogPost);
-            await blogDbContext.SaveChangesAsync();
+            await blogPostRepository.AddAsync(blogPost);
+
             return RedirectToPage("/Admin/Blogs/List");
-        }    
+        }
     }
 }

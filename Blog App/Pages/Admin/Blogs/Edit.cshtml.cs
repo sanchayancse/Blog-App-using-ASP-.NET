@@ -1,5 +1,6 @@
 using Blog_App.Data;
 using Blog_App.Models.Domain;
+using Blog_App.Repositories;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -8,51 +9,36 @@ namespace Blog_App.Pages.Admin.Blogs
 {
     public class EditModel : PageModel
     {
-        private readonly BlogDbContext blogDbContext;
+        private readonly IBlogPostRepository blogPostRepository;
+
         [BindProperty]
         public BlogPost BlogPost { get; set; }
-        public EditModel(BlogDbContext blogDbContext)
+        public EditModel(IBlogPostRepository blogPostRepository)
         {
-            this.blogDbContext = blogDbContext;
+            this.blogPostRepository = blogPostRepository;
         }
         public async Task OnGet(Guid id)
         {
-            BlogPost = await blogDbContext.BlogPosts.FindAsync(id);
+            BlogPost = await blogPostRepository.GetAsync(id);
 
         }
 
         public async Task<IActionResult> OnPostEdit()
         {
-            var existingBlogPost =await blogDbContext.BlogPosts.FindAsync(BlogPost.Id);
-
-            if(existingBlogPost != null)
-            {
-                existingBlogPost.Headig = BlogPost.Headig;
-                existingBlogPost.PageTitle = BlogPost.PageTitle;
-                existingBlogPost.Content = BlogPost.Content;
-                existingBlogPost.ShortDescription = BlogPost.ShortDescription;
-                existingBlogPost.FeaturedImageUrl = BlogPost.FeaturedImageUrl;
-                existingBlogPost.UrlHandle = BlogPost.UrlHandle;
-                existingBlogPost.PublishedDate = BlogPost.PublishedDate;
-                existingBlogPost.Author = BlogPost.Author;
-                existingBlogPost.Visible = BlogPost.Visible;
-            }
-
-           await blogDbContext.SaveChangesAsync();
+            await blogPostRepository.UpdateAsync(BlogPost);
             return RedirectToPage("/Admin/Blogs/List");
         }
 
         public async Task<IActionResult> OnPostDelete()
         {
-            var existingBlogPost =await blogDbContext.BlogPosts.FindAsync(BlogPost.Id);
-
-            if (existingBlogPost != null)
+            var deleted = await blogPostRepository.DeleteAsync(BlogPost.Id);
+            if (deleted)
             {
-                blogDbContext.BlogPosts.Remove(existingBlogPost);
-                await blogDbContext.SaveChangesAsync();
                 return RedirectToPage("/Admin/Blogs/List");
+
             }
-                return RedirectToPage("/Admin/Blogs/List");
+
+            return Page();
 
         }
     }
