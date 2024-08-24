@@ -1,20 +1,23 @@
 using Blog_App.Data;
 using Blog_App.Models.Domain;
+using Blog_App.Repositories;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Blog_App.Pages.Admin.Blogs
 {
     public class ListModel : PageModel
     {
-        private readonly BlogDbContext blogDbContext;
+        
+        private readonly IBlogPostRepository blogPostRepository;
+
         public List<BlogPost> BlogPosts { get; set; }
-        public ListModel(BlogDbContext blogDbContext)
+        public ListModel(IBlogPostRepository blogPostRepository)
         {
-            this.blogDbContext = blogDbContext;
+            this.blogPostRepository = blogPostRepository;
         }
-        public void OnGet()
+        public async Task OnGet()
         {
-            BlogPosts =  blogDbContext.BlogPosts.ToList();
+            BlogPosts = (await blogPostRepository.GetAllAsync())?.ToList();
         }
     }
 }
